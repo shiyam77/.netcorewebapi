@@ -14,8 +14,8 @@ namespace WebApidotnetcore.Models.data
         public DbSet<StudentdataModel> Students { get; set; }
         public DbSet<CreateUserAndRolesRequest> Users { get; set; }
         public DbSet<UserRoles> UserRoles { get; set; }
-
-
+        public DbSet<Roles> Roles { get; set; }
+        public DbSet<MenuComponents> MenuComponents { get; set; }
 
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
         //{

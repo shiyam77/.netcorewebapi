@@ -42,6 +42,7 @@ namespace WebApidotnetcore
             );
             services.AddScoped<StudentInterface, Repository.Repository>();
             services.AddScoped<IRegisterInterface, RegisterRepository>();
+            services.AddScoped< RoleInterface, RolewithPermissionRepositry >();
 
             services.AddControllers().AddNewtonsoftJson(options =>
             {

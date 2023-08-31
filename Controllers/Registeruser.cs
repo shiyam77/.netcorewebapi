@@ -18,7 +18,7 @@ namespace WebApidotnetcore.Controllers
         public Registeruser(IRegisterInterface _Registeruserdata)
         {
             _registerInterface = _Registeruserdata;
-        }
+        } 
 
         [HttpPost("register")]
 

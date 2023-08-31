@@ -28,5 +28,28 @@ namespace WebApidotnetcore.Models
         public int UserRoleId { get; set; }
         public int UserId { get; set; }
         public int RoleId { get; set; }
+        
+    }
+
+
+    public class Roles
+    {
+        [Key]
+        public int RoleId { get; set; }
+        public string RoleName { get; set; }
+        //public ICollection<MenuComponents> RolePermissions { get; set; }
+    }
+    public class MenuComponents
+    {
+        [Key]
+        public int ComponentID { get; set; }
+        public int RoleId { get; set; }
+        public string Name { get; set; }
+        public bool ReadPermission { get; set; }
+        public bool WritePermission { get; set; }
+        public bool DeletePermission { get; set; }
+        public bool UpdatePermission { get; set; }
+        public bool AddPermission { get; set; }
+
     }
 }

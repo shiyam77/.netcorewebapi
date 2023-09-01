@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -36,7 +38,9 @@ namespace WebApidotnetcore.Controllers
             {
                 return Unauthorized();
             }
+           
 
+         
             // Generate JWT token
             var token = GenerateJwtToken(user);
 
@@ -58,18 +62,53 @@ namespace WebApidotnetcore.Controllers
 
         private bool VerifyPassword(string savedHash, string providedPassword)
         {
-            // Implement password verification logic using a secure library like BCrypt
             return BCrypt.Net.BCrypt.Verify(providedPassword, savedHash);
         }
 
         private string GenerateJwtToken(CreateUserAndRolesRequest user)
         {
             var claims = new List<Claim>
-    {
-        //new Claim(ClaimTypes.NameIdentifier, user.Userid.ToString()),
-        new Claim(ClaimTypes.Name, user.Username),
-        // Add any additional claims here (e.g., roles, permissions)
-    };
+            {
+             new Claim("name", user.Username),
+            };
+
+            var userRoles = _context.UserRoles
+            .Where(ur => ur.UserId == user.UserId)
+            .Select(ur => ur.RoleId)
+            .ToList();
+
+
+            foreach (var roleId in userRoles)
+            {
+                var role = _context.Roles.FirstOrDefault(r => r.RoleId == roleId);
+                if (role != null)
+                {
+                    claims.Add(new Claim("role", role.RoleName));
+
+                    var userMenuComponents = _context.MenuComponents
+                   .Where(mc => mc.RoleId == roleId)
+                   .ToList();
+
+                    var menuComponentDetails = new List<MenuComponents>();
+
+                    foreach (var menuComponent in userMenuComponents)
+                    {
+                        // Add menu component details to the list
+                        menuComponentDetails.Add(menuComponent);
+
+                        // Add individual claims for menu component permissions if needed
+                        claims.Add(new Claim("menuComponent", menuComponent.ComponentID.ToString()));
+                    }
+
+                    // Serialize the menu component details to JSON
+                    var menuComponentJson = JsonConvert.SerializeObject(menuComponentDetails);
+
+                    // Add a claim with the JSON string to the token
+                    claims.Add(new Claim("menuComponents", menuComponentJson));
+                }
+            }
+
+           
 
 
             var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
@@ -91,7 +130,7 @@ namespace WebApidotnetcore.Controllers
 
             var token = new JwtSecurityToken(
                 claims: claims,
-                expires: DateTime.Now.AddHours(1), // Token expiration time
+                expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds
             );
 

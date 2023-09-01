@@ -21,5 +21,6 @@ namespace WebApidotnetcore.Models.data
         //{
         //    modelBuilder.Entity<Register>().HasNoKey(); // Configure Register as keyless
         //}
+
     }
 }

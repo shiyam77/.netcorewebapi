@@ -72,7 +72,7 @@ namespace WebApidotnetcore.Models
         public int UserId { get; set; }
         public string Username { get; set; }
         public string PasswordHash { get; set; }
-        public List<UserRoles> Roles { get; set; } = new List<UserRoles>();
+        //public List<UserRoles> Roles { get; set; } = new List<UserRoles>();
     }
 
     public class UserRoles
@@ -101,5 +101,6 @@ namespace WebApidotnetcore.Models
         public bool DeletePermission { get; set; }
         public bool UpdatePermission { get; set; }
         public bool AddPermission { get; set; }
+        public int EndpointId { get; set; }
     }
 }

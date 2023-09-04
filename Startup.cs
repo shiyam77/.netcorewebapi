@@ -21,6 +21,9 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
 using WebApidotnetcore.Repository;
 using WebApidotnetcore.Models;
+using Microsoft.OpenApi.Models;
+using System.IO;
+using System.Reflection;
 
 namespace WebApidotnetcore
 {
@@ -36,6 +39,11 @@ namespace WebApidotnetcore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+
+            var apiConfig = Configuration.GetSection("ApiEndpoints").Get<ApiEndpointInfo>();
+            services.AddSingleton(apiConfig);
+
+
             services.AddControllers();
             services.AddDbContext<CollegeDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
@@ -43,12 +51,24 @@ namespace WebApidotnetcore
             services.AddScoped<StudentInterface, Repository.Repository>();
             services.AddScoped<IRegisterInterface, RegisterRepository>();
             services.AddScoped< RoleInterface, RolewithPermissionRepositry >();
-
+            services.AddScoped<getRole, RoleRepositry>();
+            services.AddScoped<ApilistInterface, ApiListRepositry>();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = ".Netcore API", Version = "v1" });
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"; // Use the generated XML filename
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
+            });
             services.AddControllers().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
                 options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             });
+            var apiEndpoints = Configuration.GetSection("ApiEndpoints").Get<List<ApiEndpointInfo>>();
+
+            // Register the API endpoint configuration as a service
+            services.AddSingleton(apiEndpoints);
 
             var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
 
@@ -101,6 +121,12 @@ namespace WebApidotnetcore
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API Name v1");
             });
         }
         

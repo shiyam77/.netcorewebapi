@@ -16,6 +16,9 @@ namespace WebApidotnetcore.Models.data
         public DbSet<UserRoles> UserRoles { get; set; }
         public DbSet<Roles> Roles { get; set; }
         public DbSet<MenuComponents> MenuComponents { get; set; }
+        //public DbSet<apiendpointconfig> ApiEndpoints { get; set; }
+        public DbSet<ApiEndpointInfo> ApiEndpoints { get; set; }
+
 
         //protected override void OnModelCreating(ModelBuilder modelBuilder)
         //{

@@ -29,7 +29,7 @@ namespace WebApidotnetcore.Controllers
             _context = context; // Inject CollegeDbContext through constructor
         }
 
-        [HttpPost("login")]
+        [HttpPost]
         public IActionResult Login([FromBody] CreateUserAndRolesRequest model)
         {
             // Authenticate user (validate credentials)
@@ -93,18 +93,18 @@ namespace WebApidotnetcore.Controllers
 
                     foreach (var menuComponent in userMenuComponents)
                     {
-                        // Add menu component details to the list
-                        menuComponentDetails.Add(menuComponent);
-
-                        // Add individual claims for menu component permissions if needed
-                        claims.Add(new Claim("menuComponent", menuComponent.ComponentID.ToString()));
+                        menuComponentDetails.Add(menuComponent);                
                     }
 
-                    // Serialize the menu component details to JSON
-                    var menuComponentJson = JsonConvert.SerializeObject(menuComponentDetails);
+                    var menuComponentJson = JsonConvert.SerializeObject(menuComponentDetails, new JsonSerializerSettings
+                    {
+                        StringEscapeHandling = StringEscapeHandling.Default // This setting omits backslashes
+                    });
 
-                    // Add a claim with the JSON string to the token
+                    menuComponentJson = menuComponentJson.Replace("\\", "");
+
                     claims.Add(new Claim("menuComponents", menuComponentJson));
+
                 }
             }
 

@@ -13,11 +13,15 @@ namespace WebApidotnetcore.Repository
     public class RegisterRepository : IRegisterInterface
     {
         private readonly CollegeDbContext _context;
-       
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public RegisterRepository(CollegeDbContext context)
+
+        public RegisterRepository(CollegeDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         public async Task<IdentityResult> CreateUserAndAssignRoleAsync(RegisterRequestModel model)
@@ -34,6 +38,21 @@ namespace WebApidotnetcore.Repository
 
                 _context.Users.Add(user);
                 await _context.SaveChangesAsync();
+                var userss = await _userManager.FindByNameAsync(model.Username);
+                // Check if the "Admin" role exists, and create it if not
+                if (userss != null)
+                {
+                    // Check if the "Admin" role exists and create it if not
+                    if (!await _roleManager.RoleExistsAsync("Admin"))
+                    {
+                        await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                    }
+
+                    // Assign the "Admin" role to the user
+                    await _userManager.AddToRoleAsync(userss ,"Admin");
+
+                    // Rest of your code
+                }
 
                 var role = new UserRoles
                 {

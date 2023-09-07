@@ -24,11 +24,18 @@ using WebApidotnetcore.Models;
 using Microsoft.OpenApi.Models;
 using System.IO;
 using System.Reflection;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
+using WebApidotnetcore.Controllers;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace WebApidotnetcore
 {
     public class Startup
     {
+      
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -37,8 +44,39 @@ namespace WebApidotnetcore
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+       
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        
+
+
         public void ConfigureServices(IServiceCollection services)
         {
+            //services.AddAuthentication(options =>
+            //{
+            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            //}).AddJwtBearer(options =>
+            //{
+            //    options.TokenValidationParameters = new TokenValidationParameters
+            //    {
+            //        ValidateIssuer = false, // Set to true if you want to validate the issuer
+            //        ValidateAudience = false, // Set to true if you want to validate the audience
+            //        ValidateLifetime = true, // Check token expiration
+            //        ValidateIssuerSigningKey = true,
+            //        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:SecretKey"]))
+            //    };
+            //});
+
+
+
+            services.AddLogging(builder =>
+            {
+                builder.AddConsole(); // Add Console logging provider
+                builder.AddDebug();   // Add Debug output provider (for development)
+                                      // You can add more providers here (e.g., AddFile, AddEventLog, etc.)
+            });
+
+
 
             var apiConfig = Configuration.GetSection("ApiEndpoints").Get<ApiEndpointInfo>();
             services.AddSingleton(apiConfig);
@@ -50,16 +88,50 @@ namespace WebApidotnetcore
             );
             services.AddScoped<StudentInterface, Repository.Repository>();
             services.AddScoped<IRegisterInterface, RegisterRepository>();
-            services.AddScoped< RoleInterface, RolewithPermissionRepositry >();
+            services.AddScoped<RoleInterface, RolewithPermissionRepositry>();
             services.AddScoped<getRole, RoleRepositry>();
             services.AddScoped<ApilistInterface, ApiListRepositry>();
+
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+            .AddEntityFrameworkStores<CollegeDbContext>()
+                    .AddDefaultTokenProviders();
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = ".Netcore API", Version = "v1" });
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"; // Use the generated XML filename
+                var securityScheme = new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Description = "JWT Authorization header using the Bearer scheme",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT"
+                };
+
+                var securityRequirement = new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] { }
+            }
+        };
+
+                c.AddSecurityDefinition("Bearer", securityScheme);
+                c.AddSecurityRequirement(securityRequirement);
+          
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"; // Use the generated XML filename
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
             });
+           
             services.AddControllers().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
@@ -84,6 +156,11 @@ namespace WebApidotnetcore
                 Environment.SetEnvironmentVariable("JWT_SECRET_KEY", secretKey);
             }
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+            });
+
             var key = Encoding.ASCII.GetBytes(secretKey);
             services.AddAuthentication(options =>
             {
@@ -92,21 +169,33 @@ namespace WebApidotnetcore
             })
             .AddJwtBearer(options =>
             {
+                options.Events = new JwtBearerEvents
+                {
+                    OnAuthenticationFailed = context =>
+                    {
+                        Console.WriteLine("Authentication failed: " + context.Exception.Message);
+                        return Task.CompletedTask;
+                    }
+                };
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
+                    RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"  // Ensure this matches the claim type you're using
                 };
             });
+
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -115,6 +204,9 @@ namespace WebApidotnetcore
             app.UseHttpsRedirection();
 
             app.UseRouting();
+            app.UseMiddleware<Jwtmiddleware>();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
@@ -126,9 +218,13 @@ namespace WebApidotnetcore
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API Name v1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API Name v1");    
             });
+
+
         }
-        
+
+
     }
 }
+

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -23,10 +24,14 @@ namespace WebApidotnetcore.Controllers
     {
 
         private readonly CollegeDbContext _context; // Declare _context here
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public login(CollegeDbContext context)
+        public login(CollegeDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
             _context = context; // Inject CollegeDbContext through constructor
+            _userManager = userManager;
+            _roleManager = roleManager;
         }
 
         [HttpPost]
@@ -47,6 +52,7 @@ namespace WebApidotnetcore.Controllers
             return Ok(new { Token = token });
         }
 
+     
 
         private CreateUserAndRolesRequest AuthenticateUser(string Username, string PasswordHash)
         {
@@ -68,32 +74,31 @@ namespace WebApidotnetcore.Controllers
         private string GenerateJwtToken(CreateUserAndRolesRequest user)
         {
             var claims = new List<Claim>
-            {
-             new Claim("name", user.Username),
-            };
+    {
+        new Claim(ClaimTypes.Name, user.Username),
+    };
 
             var userRoles = _context.UserRoles
-            .Where(ur => ur.UserId == user.UserId)
-            .Select(ur => ur.RoleId)
-            .ToList();
-
+                .Where(ur => ur.UserId == user.UserId)
+                .Select(ur => ur.RoleId)
+                .ToList();
 
             foreach (var roleId in userRoles)
             {
                 var role = _context.Roles.FirstOrDefault(r => r.RoleId == roleId);
                 if (role != null)
                 {
-                    claims.Add(new Claim("role", role.RoleName));
+                    claims.Add(new Claim(ClaimTypes.Role, role.RoleName)); // Use ClaimTypes.Role
 
                     var userMenuComponents = _context.MenuComponents
-                   .Where(mc => mc.RoleId == roleId)
-                   .ToList();
+                        .Where(mc => mc.RoleId == roleId)
+                        .ToList();
 
                     var menuComponentDetails = new List<MenuComponents>();
 
                     foreach (var menuComponent in userMenuComponents)
                     {
-                        menuComponentDetails.Add(menuComponent);                
+                        menuComponentDetails.Add(menuComponent);
                     }
 
                     var menuComponentJson = JsonConvert.SerializeObject(menuComponentDetails, new JsonSerializerSettings
@@ -104,14 +109,11 @@ namespace WebApidotnetcore.Controllers
                     menuComponentJson = menuComponentJson.Replace("\\", "");
 
                     claims.Add(new Claim("menuComponents", menuComponentJson));
-
                 }
             }
 
-           
 
-
-            var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
+        var secretKey = Environment.GetEnvironmentVariable("JWT_SECRET_KEY");
 
             if (string.IsNullOrEmpty(secretKey))
             {

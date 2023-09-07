@@ -64,6 +64,7 @@ namespace WebApidotnetcore.Models
     {
         public CreateUserAndRolesRequest User { get; set; }
         public UserRoles Role { get; set; }
+        public string Username { get; internal set; }
     }
 
     public class CreateUserAndRolesRequest

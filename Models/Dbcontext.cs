@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 
 namespace WebApidotnetcore.Models.data
 {
-    public class CollegeDbContext : DbContext
-    {
+
+    //: DbContext
+    
+    public class CollegeDbContext :IdentityDbContext<ApplicationUser>
+    { 
         public CollegeDbContext(DbContextOptions<CollegeDbContext> options) : base(options) { }
         public DbSet<StudentdataModel> Students { get; set; }
         public DbSet<CreateUserAndRolesRequest> Users { get; set; }

@@ -1,0 +1,39 @@
+2023-09-08T11:32:55.2606174+05:30  [INF] Entity Framework Core "3.1.5" initialized '"CollegeDbContext"' using provider '"Microsoft.EntityFrameworkCore.SqlServer"' with options: "None" (9958f5bb)
+2023-09-08T11:33:05.6435257+05:30  [INF] Executed DbCommand ("93"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT 1" (0723d8ff)
+2023-09-08T11:33:10.6106639+05:30  [INF] Executed DbCommand ("4,947"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""
+IF EXISTS
+    (SELECT *
+     FROM [sys].[objects] o
+     WHERE [o].[type] = 'U'
+     AND [o].[is_ms_shipped] = 0
+     AND NOT EXISTS (SELECT *
+         FROM [sys].[extended_properties] AS [ep]
+         WHERE [ep].[major_id] = [o].[object_id]
+             AND [ep].[minor_id] = 0
+             AND [ep].[class] = 1
+             AND [ep].[name] = N'microsoft_database_tools_support'
+    )
+)
+SELECT 1 ELSE SELECT 0" (0723d8ff)
+2023-09-08T11:33:12.0578625+05:30  [INF] Executed DbCommand ("408"ms) [Parameters=[""], CommandType='Text', CommandTimeout='30']"
+""SELECT CASE
+    WHEN EXISTS (
+        SELECT 1
+        FROM [ApiEndpoints] AS [a]) THEN CAST(1 AS bit)
+    ELSE CAST(0 AS bit)
+END" (0723d8ff)
+2023-09-08T11:33:12.4446440+05:30  [INF] User profile is available. Using '"C:\Users\Admin\AppData\Local\ASP.NET\DataProtection-Keys"' as key repository and Windows DPAPI to encrypt keys at rest. (7ac5e29c)
+2023-09-08T11:33:16.0444710+05:30  [INF] Application started. Press Ctrl+C to shut down. (dcaefe54)
+2023-09-08T11:33:16.3659027+05:30  [INF] Hosting environment: "Development" (c3307c92)
+2023-09-08T11:33:16.6442995+05:30  [INF] Content root path: "C:\Users\Admin\source\repos\WebApidotnetcore\WebApidotnetcore" (b5d60022)
+2023-09-08T11:33:16.9425366+05:30 80000002-0001-fb00-b63f-84710c7967bb [INF] Request starting HTTP/2.0 GET https://localhost:44305/weatherforecast   (ca22a1cb)
+2023-09-08T11:33:19.5676718+05:30 80000002-0001-fb00-b63f-84710c7967bb [INF] Executing endpoint '"WebApidotnetcore.Controllers.WeatherForecastController.Get (WebApidotnetcore)"' (500cc934)
+2023-09-08T11:33:19.6904883+05:30 80000002-0001-fb00-b63f-84710c7967bb [INF] Route matched with "{action = \"Get\", controller = \"WeatherForecast\"}". Executing controller action with signature "System.Collections.Generic.IEnumerable`1[WebApidotnetcore.WeatherForecast] Get()" on controller "WebApidotnetcore.Controllers.WeatherForecastController" ("WebApidotnetcore"). (122b2fdf)
+2023-09-08T11:33:19.7051821+05:30 80000002-0001-fb00-b63f-84710c7967bb [INF] Executing ObjectResult, writing value of type '"WebApidotnetcore.WeatherForecast[]"'. (8a1b66c8)
+2023-09-08T11:33:20.8637104+05:30 80000002-0001-fb00-b63f-84710c7967bb [INF] Executed action "WebApidotnetcore.Controllers.WeatherForecastController.Get (WebApidotnetcore)" in 1162.5243ms (afa2e885)
+2023-09-08T11:33:20.8653135+05:30 80000002-0001-fb00-b63f-84710c7967bb [INF] Executed endpoint '"WebApidotnetcore.Controllers.WeatherForecastController.Get (WebApidotnetcore)"' (99874f2b)
+2023-09-08T11:33:20.8691461+05:30 80000002-0001-fb00-b63f-84710c7967bb [INF] Request finished in 3931.5141ms 200 application/json; charset=utf-8 (791a596a)
+2023-09-08T11:33:22.3182014+05:30 80000002-0000-fd00-b63f-84710c7967bb [INF] Request starting HTTP/2.0 GET https://localhost:44305/favicon.ico   (ca22a1cb)
+2023-09-08T11:33:22.6061829+05:30 80000002-0000-fd00-b63f-84710c7967bb [INF] Request finished in 288.0382ms 404  (791a596a)

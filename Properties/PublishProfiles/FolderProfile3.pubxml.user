@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <_PublishTargetUrl>C:\Users\Admin\Desktop\dotwebapibuld</_PublishTargetUrl>
+    <History>True|2023-09-08T10:31:50.9694397Z;True|2023-09-08T16:00:54.3030329+05:30;False|2023-09-08T15:56:23.6890951+05:30;False|2023-09-08T15:54:40.4060121+05:30;False|2023-09-08T15:53:56.1136095+05:30;False|2023-09-08T15:53:07.6320420+05:30;False|2023-09-08T15:52:07.4735810+05:30;True|2023-09-08T11:52:32.9250184+05:30;</History>
+  </PropertyGroup>
+</Project>

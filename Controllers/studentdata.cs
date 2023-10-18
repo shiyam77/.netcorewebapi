@@ -14,7 +14,7 @@ namespace WebApidotnetcore.Controllers
 
 {
 
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     [Route("[controller]")]
     [ApiController]
    
@@ -29,42 +29,75 @@ namespace WebApidotnetcore.Controllers
             _logger = logger;
         }
 
-       
+
+
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<studentdata>>> GetStudentData()
+        //{
+        //    try
+        //    {
+        //        var user = HttpContext.User;
+        //        var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Substring("Bearer ".Length);
+
+        //        // Log the received token
+        //        _logger.LogInformation($"Received token: {token}");
+
+        //        var roles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
+        //        //var roles = user.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(c => c.Value).ToList();
+        //        _logger.LogInformation($"User roles: {string.Join(", ", roles)}");
+
+        //        if (roles.Contains("Admin"))
+        //        {
+        //            var students = await _productRepository.GetAllStudentAsync();
+        //        _logger.LogInformation("Retrieved all student data."); // Log an information message
+        //        return Ok(students);
+        //             }
+        //        else
+        //        {
+        //            // User is not authorized
+        //            return StatusCode(403, "Access denied. You do not have the 'Admin' role.");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex, "An error occurred while retrieving student data."); // Log an error message with the exception
+        //        return StatusCode(500, "An error occurred while processing your request.");
+        //    }
+        //}
+
         [HttpGet]
-
-      
-        public async Task<ActionResult<IEnumerable<studentdata>>> GetStudentData()
+        public async Task<IActionResult> getStudents(string nameFilter)
         {
-            try
+            if (!string.IsNullOrWhiteSpace(nameFilter))
             {
-                var user = HttpContext.User;
-                var token = HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Substring("Bearer ".Length);
-
-                // Log the received token
-                _logger.LogInformation($"Received token: {token}");
-
-                var roles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
-                //var roles = user.Claims.Where(c => c.Type == System.Security.Claims.ClaimTypes.Role).Select(c => c.Value).ToList();
-                _logger.LogInformation($"User roles: {string.Join(", ", roles)}");
-            
-                if (roles.Contains("Admin"))
-                {
-                    var students = await _productRepository.GetAllStudentAsync();
-                _logger.LogInformation("Retrieved all student data."); // Log an information message
-                return Ok(students);
-                     }
-                else
-                {
-                    // User is not authorized
-                    return StatusCode(403, "Access denied. You do not have the 'Admin' role.");
-                }
+                // Execute the method that filters by name
+                var results = await _productRepository.GetStudentsByLastName(nameFilter);
+                return Ok(results);
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError(ex, "An error occurred while retrieving student data."); // Log an error message with the exception
-                return StatusCode(500, "An error occurred while processing your request.");
+                // Execute the default method to get all students
+                var allStudents = await _productRepository.GetStudentsByLastName(string.Empty);
+                return Ok(allStudents);
             }
         }
+
+        //public async Task<IEnumerable<StudentdataModel>> GetStudentsByLastName(string nameFilter)
+        //{
+        //    if (string.IsNullOrWhiteSpace(nameFilter))
+        //    {
+        //        return await _productRepository.GetAllStudentAsync() // Retrieve all students
+        //    }
+        //    else
+        //    {
+        //        // Modify your query to filter by nameFilter
+        //        var filteredResults = await _productRepository.GetAllStudentAsync()
+        //            .Where(s => s.Name == nameFilter)
+        //            .ToListAsync();
+
+        //        return filteredResults;
+        //    }
+        //}
 
 
         [HttpGet ("{Id}")]

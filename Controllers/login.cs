@@ -44,15 +44,11 @@ namespace WebApidotnetcore.Controllers
                 return Unauthorized();
             }
            
-
-         
             // Generate JWT token
             var token = GenerateJwtToken(user);
 
             return Ok(new { Token = token });
         }
-
-     
 
         private CreateUserAndRolesRequest AuthenticateUser(string Username, string PasswordHash)
         {
@@ -62,8 +58,11 @@ namespace WebApidotnetcore.Controllers
             {
                 return user;
             }
-
-            return null;
+            else if (user == null)
+            {
+                throw new ApplicationException("User not found.");
+            }
+                return null;
         }
 
         private bool VerifyPassword(string savedHash, string providedPassword)

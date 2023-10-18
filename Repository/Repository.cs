@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -54,6 +55,26 @@ namespace WebApidotnetcore.Repository
             await _context.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<StudentdataModel>> GetStudentsByLastName(string nameFilter)
+        {
+            var sql = "EXEC collegeapplications @nameFilter";
+
+            if (string.IsNullOrWhiteSpace(nameFilter))
+            {
+                // If nameFilter is not provided, remove the parameter from the SQL query
+                sql = "EXEC collegeapplications";
+            }
+            else
+            {
+                // If nameFilter is provided, include the parameter in the query
+                var nameFilterParam = new SqlParameter("@nameFilter", nameFilter);
+                return await _context.Students.FromSqlRaw(sql, nameFilterParam).ToListAsync();
+            }
+
+            return await _context.Students.FromSqlRaw(sql).ToListAsync();
+        }
+
     }
 
 }
+

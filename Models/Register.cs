@@ -67,6 +67,12 @@ namespace WebApidotnetcore.Models
         public string Username { get; internal set; }
     }
 
+    public class errorresponse
+    {
+        public bool IsAuthenticated { get; set; }
+        public string ErrorMessage { get; set; }
+    }
+
     public class CreateUserAndRolesRequest
     {
         [Key]
@@ -91,17 +97,33 @@ namespace WebApidotnetcore.Models
         public string RoleName { get; set; }
     }
 
+
     public class MenuComponents
     {
+    
         [Key]
+        [Column("ComponentID")]
         public int ComponentID { get; set; }
         public int RoleId { get; set; }
+        public string Rolename { get; set; }
         public string Name { get; set; }
+
+        // Define a collection of EndpointPermissions
+        public ICollection<EndpointPermission> Permissions { get; set; }
+
+    }
+
+    public class EndpointPermission
+    {
+        [Key]
+        public int EndpointPermissionID { get; set; }
+
+        public int MenuComponentsComponentID { get; set; }
+        public int EndpointId { get; set; }
+        public string EndpointName { get; set; }
         public bool ReadPermission { get; set; }
-        public bool WritePermission { get; set; }
+        public bool AddPermission { get; set; }
         public bool DeletePermission { get; set; }
         public bool UpdatePermission { get; set; }
-        public bool AddPermission { get; set; }
-        public int EndpointId { get; set; }
     }
 }

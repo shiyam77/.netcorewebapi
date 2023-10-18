@@ -9,6 +9,19 @@ namespace WebApidotnetcore.Interface
 {
    public interface RoleInterface
     {
-        Task<IdentityResult> Createpermission(MenuComponents model);
+    Task<IEnumerable<MenuComponents>> GetMenuComponentsAsync();
+    Task<MenuComponents> GetMenuComponentAsync(int id);
+    Task CreateMenuComponentAsync(MenuComponents menuComponent);
+    Task UpdateMenuComponentAsync(MenuComponents menuComponent);
+    Task DeleteMenuComponentAsync(int id);
+
+    //Task<IEnumerable<MenuComponents>> GetMenuComponentsWithPermissionsAsync();
+
+        //Task<IEnumerable<EndpointPermission>> GetEndpointPermissionsAsync();
+        //Task<EndpointPermission> GetEndpointPermissionAsync(int id);
+        //Task CreateEndpointPermissionAsync(EndpointPermission endpointPermission);
+        //Task UpdateEndpointPermissionAsync(EndpointPermission endpointPermission);
+        //Task DeleteEndpointPermissionAsync(int id);
     }
+
 }

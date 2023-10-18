@@ -51,6 +51,25 @@ namespace WebApidotnetcore
 
         public void ConfigureServices(IServiceCollection services)
         {
+
+            services.AddMvc();
+            services.AddSession(); // Add this line
+            services.AddHttpContextAccessor(); // Add this line
+
+                                               //        services.AddIdentity<ApplicationUser, IdentityRole>()
+                                               //.AddEntityFrameworkStores<CollegeDbContext>()
+                                               //.AddDefaultTokenProviders();
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                               .AllowAnyMethod()
+                               .AllowAnyHeader();
+                    });
+            });
             //services.AddAuthentication(options =>
             //{
             //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -91,6 +110,7 @@ namespace WebApidotnetcore
             services.AddScoped<RoleInterface, RolewithPermissionRepositry>();
             services.AddScoped<getRole, RoleRepositry>();
             services.AddScoped<ApilistInterface, ApiListRepositry>();
+
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
             .AddEntityFrameworkStores<CollegeDbContext>()
@@ -209,6 +229,8 @@ namespace WebApidotnetcore
             app.UseAuthentication();
 
             app.UseAuthorization();
+
+            app.UseCors("AllowAllOrigins");
 
             app.UseEndpoints(endpoints =>
             {

@@ -16,6 +16,8 @@ namespace WebApidotnetcore.Interface
         Task DeleteStudentAsync(int id);
         Task AddStudentAsync(StudentdataModel Addstudentdata);
 
+        Task<IEnumerable<StudentdataModel>> GetStudentsByLastName(string nameFilter);
+
     }
 
    

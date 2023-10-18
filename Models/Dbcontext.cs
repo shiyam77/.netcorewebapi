@@ -10,7 +10,10 @@ namespace WebApidotnetcore.Models.data
 {
 
     //: DbContext
-    
+
+    //public class CollegeDbContext : IdentityUser
+
+
     public class CollegeDbContext :IdentityDbContext<ApplicationUser>
     { 
         public CollegeDbContext(DbContextOptions<CollegeDbContext> options) : base(options) { }
@@ -18,15 +21,13 @@ namespace WebApidotnetcore.Models.data
         public DbSet<CreateUserAndRolesRequest> Users { get; set; }
         public DbSet<UserRoles> UserRoles { get; set; }
         public DbSet<Roles> Roles { get; set; }
-        public DbSet<MenuComponents> MenuComponents { get; set; }
         //public DbSet<apiendpointconfig> ApiEndpoints { get; set; }
         public DbSet<ApiEndpointInfo> ApiEndpoints { get; set; }
 
+        public DbSet<MenuComponents> MenuComponents { get; set; }
+        public DbSet<EndpointPermission> EndpointPermission { get; set; }
 
-        //protected override void OnModelCreating(ModelBuilder modelBuilder)
-        //{
-        //    modelBuilder.Entity<Register>().HasNoKey(); // Configure Register as keyless
-        //}
+       
 
     }
 }

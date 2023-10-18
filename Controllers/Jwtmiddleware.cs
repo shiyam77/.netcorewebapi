@@ -44,5 +44,6 @@ namespace WebApidotnetcore.Controllers
             // You can replace this with your logging mechanism
             Console.WriteLine($"Decoded token - Name: {name}, Role: {role}");
         }
+
     }
 }

@@ -34,6 +34,7 @@ namespace WebApidotnetcore.Repository
             await _context.SaveChangesAsync();
         }
 
+
         public async Task<StudentdataModel> GetStudentByIdAsync(int Id)
         {
             return await _context.Students.FindAsync(Id);
@@ -57,6 +58,7 @@ namespace WebApidotnetcore.Repository
 
         public async Task<IEnumerable<StudentdataModel>> GetStudentsByLastName(string nameFilter)
         {
+
             var sql = "EXEC collegeapplications @nameFilter";
 
             if (string.IsNullOrWhiteSpace(nameFilter))
@@ -73,6 +75,36 @@ namespace WebApidotnetcore.Repository
 
             return await _context.Students.FromSqlRaw(sql).ToListAsync();
         }
+
+        //public async Task<IEnumerable<StudentdataModel>> GetStudentsByLastName(string nameFilter, int pageNumber, int pageSize)
+        //{
+        //    // Define the stored procedure name
+        //    var storedProcedureName = "collegeapplications";
+
+        //    // Determine whether the nameFilter is provided or not
+        //    if (string.IsNullOrWhiteSpace(nameFilter))
+        //    {
+        //        // If nameFilter is not provided, remove the parameter from the SQL query
+        //        storedProcedureName = "collegeapplications";
+        //    }
+
+        //    // Calculate the number of items to skip to reach the desired page
+        //    int itemsToSkip = (pageNumber - 1) * pageSize;
+
+        //    // Define the SQL query with pagination
+        //    var sql = $@"EXEC {storedProcedureName}
+        //         OFFSET {itemsToSkip} ROWS
+        //         FETCH NEXT {pageSize} ROWS ONLY";
+
+        //    if (!string.IsNullOrWhiteSpace(nameFilter))
+        //    {
+        //        // If nameFilter is provided, include the parameter in the query
+        //        var nameFilterParam = new SqlParameter("@nameFilter", nameFilter);
+        //        return await _context.Students.FromSqlRaw(sql, nameFilterParam).ToListAsync();
+        //    }
+
+        //    return await _context.Students.FromSqlRaw(sql).ToListAsync();
+        //}
 
     }
 

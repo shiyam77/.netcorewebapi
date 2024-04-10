@@ -27,7 +27,7 @@ namespace WebApidotnetcore.Controllers
             var userRoles = new List<UserRoles>(); // Populate user roles
 
             var result = await _registerInterface.CreateUserAndAssignRoleAsync(model);
-
+                
             if (result.Succeeded)
             {
                 return Ok(new { Message = "User registered successfully." });
